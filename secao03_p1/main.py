@@ -26,9 +26,6 @@ app = FastAPI(title="API de Cursos Geek university",
               description="Uma API para estudo do FastAPI")
 
 
-
-
-
 @app.get("/cursos",
          description='Retorna totos od cursos ou uma lista vazia',
          summary='Consultar cursos',
@@ -52,8 +49,8 @@ async def get_curso(curso_id: int = Path(default=None, title="ID do curso",
           response_model=Curso)
 async def post_curso(curso: Curso, db: Any = Depends(fake_db)):
     next_id: int = len(cursos) + 1
-    cursos[next_id] = curso
-    del curso.id
+    curso.id = next_id
+    cursos.append(curso)
     return curso
 
 
@@ -68,10 +65,11 @@ async def put_curso(curso_id: int, curso: Curso, db: Any = Depends(fake_db)):
 
 
 @app.delete("/cursos/{curso_id}", status_code=status.HTTP_200_OK)
-async def delete_curso(curso_id: int, db: Any = Depends(fake_db)):
-    if curso_id in cursos:
-        curso = cursos[curso_id]
-        del cursos[curso_id]
+async def delete_curso(curso_id: int, db: Any = Depends(fake_db), curso=Curso):
+    curso.id = curso_id
+    if curso.id in cursos:
+        curso = cursos[curso.id]
+        del cursos[curso.id]
         return curso
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"O curso com o ID {curso_id} NAO existe.")
