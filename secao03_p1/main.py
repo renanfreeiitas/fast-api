@@ -6,6 +6,10 @@ from fastapi import status
 from fastapi import Depends
 
 from fastapi import Path
+from fastapi import Response
+from fastapi import Query
+from fastapi import Header
+
 from time import sleep
 
 from models import Curso
@@ -45,12 +49,12 @@ async def get_curso(curso_id: int = Path(default=None, title="ID do curso",
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Curso nao encontrado.')
 
 
-@app.post("/cursos", status_code=status.HTTP_201_CREATED,
-          response_model=Curso)
-async def post_curso(curso: Curso, db: Any = Depends(fake_db)):
+@app.post("/cursos", status_code=status.HTTP_201_CREATED, response_model=Curso)
+async def post_curso(curso: Curso):
     next_id: int = len(cursos) + 1
     curso.id = next_id
     cursos.append(curso)
+    
     return curso
 
 
